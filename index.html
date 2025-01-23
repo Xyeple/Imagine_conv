@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Преобразователь изображений</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Преобразователь изображений для печати A4</h1>
+    <input type="file" id="upload" accept="image/*">
+    <button id="convert">Преобразовать</button>
+    <canvas id="canvas" width="2480" height="3508"></canvas>
+    
+    <script>
+        const upload = document.getElementById('upload');
+        const convert = document.getElementById('convert');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Шаблон для наложения
+        const templateImage = new Image();
+        templateImage.crossOrigin = "Anonymous"; // Установите этот атрибут
+        templateImage.src = 'https://i.ibb.co/bQmqPhM/A4-1.png';
+
+        // Ждем загрузки шаблона
+        templateImage.onload = function() {
+            upload.addEventListener('change', handleImageUpload);
+        };
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const userImage = new Image();
+                    userImage.src = e.target.result;
+                    userImage.onload = function() {
+                        // Отрисовка изображения пользователя на холсте
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(userImage, 0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height); // Наложение шаблона
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        convert.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'output.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    </script>
+</body>
+</html>
