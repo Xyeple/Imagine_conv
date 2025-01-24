@@ -6,22 +6,85 @@
     <title>Преобразователь изображений</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            margin: 20px;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Занимает всю высоту экрана */
+        }
+        .container {
+            max-width: 60%; /* Уменьшение ширины контейнера на 33% */
+            width: 400px; /* Новая ширина для больших экранов */
+            padding: 1.3rem; /* Уменьшенные отступы для контейнера */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px; /* Скругление углов */
+            background-color: white; /* Цвет фона контейнера */
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem; /* Уменьшенный отступ снизу */
+            font-size: 1.34rem; /* Уменьшенный размер шрифта заголовка */
+        }
+        #upload {
+            padding: 0.67rem; /* Уменьшенные отступы */
+            border: 2px solid #2980b9;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            margin: 1rem auto; /* Центрируем кнопку с равными отступами сверху и снизу */
+            width: calc(100% - 20px); /* Полная ширина кнопки загрузки с учетом отступов */
+            display: block; /* Устанавливаем display в block для центрирования */
+            margin-left: calc(-1%); /* Сдвигаем кнопку влево на 10% от ширины контейнера */
+        }
+        #upload:hover {
+            background-color: #2980b9;
+            border-color: #fff;
+            color: #fff;
+        }
+        #convert {
+            padding: 0.67rem 1.33rem; /* Уменьшенные отступы для кнопки преобразования */
+            border: none;
+            border-radius: 5px;
+            background-color: #27ae60;
+            color: white;
+            font-size: 0.67rem; /* Уменьшенный размер шрифта кнопки */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block; /* Устанавливаем display в block для центрирования */
+            margin: 1rem auto; /* Центрируем кнопку с равными отступами сверху и снизу */
+        }
+        #convert:hover {
+            background-color: #219150;
         }
         #canvas {
-            border: 1px solid #ccc;
-            margin-top: 20px;
+            border: 2px solid #2980b9;
+            margin-top: 1.33rem; /* Уменьшенный отступ сверху */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Полная ширина холста */
+            height: auto; /* Автоматическая высота */
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1rem; /* Уменьшение размера заголовка на маленьких экранах */
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Преобразователь изображений для печати A4</h1>
-    <input type="file" id="upload" accept="image/*">
-    <button id="convert">Преобразовать</button>
-    <canvas id="canvas" width="2480" height="3508"></canvas>
-    
+    <div class="container">
+        <h1>Преобразователь изображений для печати шаблона</h1>
+        <input type="file" id="upload" accept="image/*">
+        <button id="convert">Преобразовать</button>
+        <canvas id="canvas" width="2480" height="3508"></canvas>
+    </div>
+
     <script>
         const upload = document.getElementById('upload');
         const convert = document.getElementById('convert');
@@ -45,11 +108,19 @@
                 reader.onload = function(e) {
                     const userImage = new Image();
                     userImage.src = e.target.result;
+
                     userImage.onload = function() {
-                        // Отрисовка изображения пользователя на холсте
+                        // Очистка холста
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(userImage, 0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height); // Наложение шаблона
+                        
+                        // Рисуем изображение пользователя на холсте с растягиванием
+                        ctx.drawImage(userImage, 0, 0, canvas.width, canvas.height); // Растягиваем изображение на весь холст
+                        
+                        // Рисуем шаблон поверх изображения
+                        ctx.drawImage(templateImage, 0, 0, canvas.width, canvas.height); // Растягиваем шаблон на весь холст
+                        
+                        // Показываем холст после преобразования
+                        canvas.style.display = 'block';
                     };
                 };
                 reader.readAsDataURL(file);
